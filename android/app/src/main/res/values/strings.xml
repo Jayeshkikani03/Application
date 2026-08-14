@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">eSource</string>
+    <string name="title_activity_main">eSource</string>
+    <string name="package_name">com.esource.lab</string>
+    <string name="custom_url_scheme">com.esource.lab</string>
+</resources>

@@ -1,0 +1,82 @@
+workflows:
+  android-release:
+    name: eSource Android
+    max_build_duration: 60
+    instance_type: linux_x2
+    environment:
+      java: 17
+      node: 20
+      vars:
+        PACKAGE_NAME: com.esource.lab
+        API_PATH_BASE: https://sspldev-esource.sspluniverse.com/API
+      groups:
+        - keystore_credentials
+    scripts:
+      - name: Set mobile API config
+        script: |
+          printf '%s\n' "{\"apiPathBase\":\"${API_PATH_BASE}\",\"isNative\":true}" > public/app.config.json
+      - name: Install npm packages
+        script: npm ci
+      - name: Build web app
+        script: npm run build
+      - name: Sync Capacitor Android
+        script: npx cap sync android
+      - name: Build Android App Bundle
+        script: |
+          cd android
+          chmod +x gradlew
+          ./gradlew bundleRelease
+    artifacts:
+      - android/app/build/outputs/**/*.aab
+      - android/app/build/outputs/**/*.apk
+
+  ios-release:
+    name: eSource iOS
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: Encrypted
+    environment:
+      node: 20
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.esource.lab
+      vars:
+        BUNDLE_ID: com.esource.lab
+        API_PATH_BASE: https://sspldev-esource.sspluniverse.com/API
+        XCODE_WORKSPACE: "ios/App/App.xcworkspace"
+        XCODE_SCHEME: App
+    scripts:
+      - name: Set mobile API config
+        script: |
+          printf '%s\n' "{\"apiPathBase\":\"${API_PATH_BASE}\",\"isNative\":true}" > public/app.config.json
+      - name: Install npm packages
+        script: npm ci
+      - name: Build web app
+        script: npm run build
+      - name: Add iOS platform if missing
+        script: |
+          if [ ! -d "ios/App" ]; then
+            npx cap add ios
+          fi
+      - name: Sync Capacitor iOS
+        script: npx cap sync ios
+      - name: CocoaPods
+        script: |
+          cd ios/App
+          pod install
+      - name: Set up signing
+        script: xcode-project use-profiles
+      - name: Build IPA
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

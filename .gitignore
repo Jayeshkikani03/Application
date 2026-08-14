@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+
+# Web build
+dist/
+dist-ssr/
+build/
+*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment — keep secrets out of Git
+.env
+.env.local
+.env.*.local
+
+# Vite / caches
+.vite/
+.eslintcache
+.cache/
+coverage/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Signing — never commit
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+*.cer
+*.certSigningRequest
+google-services.json
+GoogleService-Info.plist
+
+# Android build outputs (commit the android/ project itself)
+android/.gradle/
+android/build/
+android/app/build/
+android/app/.cxx/
+android/local.properties
+android/captures/
+android/*.iml
+
+# iOS build outputs (commit the ios/ Xcode project itself)
+ios/App/Pods/
+ios/App/build/
+ios/DerivedData/
+ios/App/App/public/
+*.xcuserstate
+xcuserdata/
