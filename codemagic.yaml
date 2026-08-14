@@ -5,7 +5,7 @@ workflows:
     # Free personal plan: macOS M2 only. linux_x2 needs billing enabled.
     instance_type: mac_mini_m2
     environment:
-      java: 17
+      java: 21
       node: 20
       vars:
         PACKAGE_NAME: com.esource.lab
@@ -25,6 +25,8 @@ workflows:
         script: npx cap sync android
       - name: Build Android APK (debug — no Play keystore required)
         script: |
+          export JAVA_HOME=$(/usr/libexec/java_home -v 21)
+          java -version
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
