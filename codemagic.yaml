@@ -2,15 +2,17 @@ workflows:
   android-release:
     name: eSource Android
     max_build_duration: 60
-    instance_type: linux_x2
+    # Free personal plan: macOS M2 only. linux_x2 needs billing enabled.
+    instance_type: mac_mini_m2
     environment:
       java: 17
       node: 20
       vars:
         PACKAGE_NAME: com.esource.lab
         API_PATH_BASE: https://sspldev-esource.sspluniverse.com/API
-      groups:
-        - keystore_credentials
+      # Add this group in Codemagic after you upload a keystore.
+      # groups:
+      #   - keystore_credentials
     scripts:
       - name: Set mobile API config
         script: |
@@ -21,13 +23,12 @@ workflows:
         script: npm run build
       - name: Sync Capacitor Android
         script: npx cap sync android
-      - name: Build Android App Bundle
+      - name: Build Android APK (debug — no Play keystore required)
         script: |
           cd android
           chmod +x gradlew
-          ./gradlew bundleRelease
+          ./gradlew assembleDebug
     artifacts:
-      - android/app/build/outputs/**/*.aab
       - android/app/build/outputs/**/*.apk
 
   ios-release:
